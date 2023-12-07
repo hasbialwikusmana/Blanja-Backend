@@ -2,7 +2,6 @@ const createError = require("http-errors");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
-const cloudinary = require("../middlewares/cloudinary");
 const errorServ = new createError.InternalServerError();
 const commonHelper = require("../helpers/common");
 const authHelper = require("../helpers/auth");
