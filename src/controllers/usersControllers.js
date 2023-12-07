@@ -2,12 +2,12 @@ const createError = require("http-errors");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
-// const cloudinary = require("../middlewares/cloudinary");
+const cloudinary = require("../middlewares/cloudinary");
 const errorServ = new createError.InternalServerError();
 const commonHelper = require("../helpers/common");
 const authHelper = require("../helpers/auth");
 
-const { findEmail, createUser, createSeller, allUser } = require("../models/usersModels");
+const { findEmail, createUser, createSeller, getUsersById, updateUser, updatePhotoUsers, allUser } = require("../models/usersModels");
 
 const usersControllers = {
   registerCustomer: async (req, res) => {
@@ -107,6 +107,7 @@ const usersControllers = {
     };
     commonHelper.response(res, result, 200);
   },
+
   profile: async (req, res) => {
     const email = req.payload.email;
     const {
@@ -114,6 +115,53 @@ const usersControllers = {
     } = await findEmail(email);
     delete users.password;
     commonHelper.response(res, users, 200);
+  },
+
+  updateUsers: async (req, res) => {
+    try {
+      const { name, email, phone, store_name } = req.body;
+      const id = String(req.params.id);
+      const { rowCount } = await findID(id);
+      if (!rowCount) {
+        res.json({ message: "ID Not Found" });
+      }
+      const data = {
+        id,
+        name,
+        email,
+        phone,
+        store_name,
+      };
+
+      updateUser(data)
+        .then((result) => commonHelper.response(res, result.rows, 200, "Update users Success"))
+        .catch((err) => res.send(err));
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  updatePhoto: async (req, res) => {
+    try {
+      const id = String(req.params.id);
+      const { rowCount } = await findID(id);
+      if (!rowCount) {
+        res.json({ message: "ID Not Found" });
+      }
+      const result = await cloudinary.uploader.upload(req.file.path);
+      const photo = result.secure_url;
+
+      const data = {
+        id,
+        photo,
+      };
+
+      updatePhotoUsers(data)
+        .then((result) => commonHelper.response(res, result.rows, 200, "Update Users Success"))
+        .catch((err) => res.send(err));
+    } catch (error) {
+      console.log(error);
+    }
   },
 
   user: async (req, res) => {
@@ -135,6 +183,15 @@ const usersControllers = {
         message: "Something went wrong",
       });
     }
+  },
+
+  getselectUsers: async (req, res) => {
+    const id = String(req.params.id);
+    getUsersById(id)
+      .then((result) => {
+        commonHelper.response(res, result.rows, 200, "Get User Detail Success");
+      })
+      .catch((err) => res.send(err));
   },
 };
 module.exports = usersControllers;
