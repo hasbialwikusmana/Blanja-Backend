@@ -39,16 +39,16 @@ const categoryControllers = {
       .catch((err) => res.send(err));
   },
   insertCategory: async (req, res, next) => {
-    const { name, photo } = req.body;
+    const { name } = req.body;
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "Category",
     });
-    const image = result.secure_url;
+    const photo = result.secure_url;
     const id = uuidv4();
     const data = {
       id: id,
       name,
-      photo: image,
+      photo,
     };
     insert(data)
       .then((result) => commonHelper.response(res, result.rows, 201, "Category created"))
@@ -57,7 +57,7 @@ const categoryControllers = {
   updateCategory: async (req, res, next) => {
     try {
       const id = String(req.params.id);
-      const { name, photo } = req.body;
+      const { name } = req.body;
       const { rowCount } = await findId(id);
       if (!rowCount) {
         return next(createError(403, "ID is Not Found"));
@@ -65,12 +65,12 @@ const categoryControllers = {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "Category",
       });
-      const image = result.secure_url;
+      const photo = result.secure_url;
 
       const data = {
         id,
         name,
-        photo: image,
+        photo,
       };
       update(data)
         .then((result) => commonHelper.response(res, result.rows, 200, "Category updated"))
