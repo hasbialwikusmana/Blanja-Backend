@@ -18,8 +18,6 @@ CREATE TABLE products(
     price INT NOT NULL,
     photo VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
-    id_category int,
-    CONSTRAINT fk_category FOREIGN KEY (id_category) REFERENCES category(id),
 );
 
 
