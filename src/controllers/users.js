@@ -47,7 +47,7 @@ const usersControllers = {
         res.json({ message: "ID Not Found" });
       }
       const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "Image User",
+        folder: "User",
       });
       const photo = result.secure_url;
 
