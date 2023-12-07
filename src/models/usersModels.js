@@ -38,6 +38,16 @@ const createSeller = (data) => {
   );
 };
 
+const updatePhotoUsers = (data) => {
+  const { id, photo } = data;
+  return Pool.query(`UPDATE users SET photo = '${photo}' WHERE id = '${id}'`);
+};
+
+const updateUser = (data) => {
+  const { id, name, email, phone, store_name } = data;
+  return Pool.query(`UPDATE users SET name = '${name}', email = '${email}' , phone = '${phone}', store_name = '${store_name}' WHERE id = '${id}'`);
+};
+
 const allUser = () => {
   return new Promise((resolve, reject) =>
     Pool.query(`SELECT * FROM users`, (error, result) => {
@@ -55,4 +65,6 @@ module.exports = {
   createUser,
   createSeller,
   allUser,
+  updateUser,
+  updatePhotoUsers,
 };
