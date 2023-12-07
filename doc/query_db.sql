@@ -18,6 +18,7 @@ CREATE TABLE products(
     price INT NOT NULL,
     photo VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
+    id_category VARCHAR
 );
 
 
@@ -32,8 +33,8 @@ CREATE TABLE order_list (
         size VARCHAR,
         quantity_order INT,
         date_order TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        id_product VARCHAR,
-        id_user VARCHAR
+        id_products VARCHAR,
+        id_users VARCHAR
     );
 
 CREATE TABLE address (
