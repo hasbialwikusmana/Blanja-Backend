@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use("/", mainRouter);
-app.use("/img", express.static("./uploads"));
+app.use("/img", express.static("upload"));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
