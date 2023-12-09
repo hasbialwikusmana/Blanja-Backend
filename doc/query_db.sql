@@ -7,7 +7,9 @@ CREATE TABLE users(
     phone VARCHAR,
     store_name VARCHAR,
     photo VARCHAR,
-    role VARCHAR
+    role VARCHAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
 
@@ -18,24 +20,30 @@ CREATE TABLE products(
     price INT NOT NULL,
     photo VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
-    id_category VARCHAR
+    id_category VARCHAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
 
 CREATE TABLE category(
     id VARCHAR PRIMARY KEY,
     name VARCHAR NOT NULL,
-    photo VARCHAR
+    photo VARCHAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
 CREATE TABLE order_list (
-        id_order VARCHAR PRIMARY KEY,
-        size VARCHAR,
-        quantity_order INT,
-        date_order TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        id_products VARCHAR,
-        id_users VARCHAR
-    );
+    id_order VARCHAR PRIMARY KEY,
+    size VARCHAR,
+    quantity_order INT,
+    date_order TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_products VARCHAR,
+    id_users VARCHAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
+);
 
 CREATE TABLE address (
     id VARCHAR PRIMARY KEY,
@@ -45,6 +53,8 @@ CREATE TABLE address (
     address VARCHAR(250), 
     phone VARCHAR(20), 
     postal_code VARCHAR(10), 
-    city VARCHAR(50) 
+    city VARCHAR(50) ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
