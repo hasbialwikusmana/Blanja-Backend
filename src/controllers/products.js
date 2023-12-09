@@ -4,17 +4,18 @@ const errorServ = new createError.InternalServerError();
 const commonHelper = require("../helpers/common");
 const cloudinary = require("../middlewares/cloudinary");
 
-const { selectAll, select, countData, findId, insert, update, deleteData } = require("../models/products");
+const { selectAll, select,selectCategory, countData, findId, insert, update, deleteData } = require("../models/products");
 
 const productsController = {
   getAllProduct: async (req, res) => {
     try {
-      const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || 100;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+      const search = req.query.search || "";
       const offset = (page - 1) * limit;
-      const sortby = req.query.sortby || "id";
+      const sortby = req.query.sortby || "price";
       const sort = req.query.sort || "ASC";
-      const result = await selectAll({ limit, offset, sort, sortby });
+      const result = await selectAll({ limit, offset, search, sort, sortby });
       const {
         rows: [count],
       } = await countData();
@@ -39,8 +40,19 @@ const productsController = {
       })
       .catch((err) => res.send(err));
   },
+
+  getCategory: (req, res) => {
+    const id = String(req.params.id);
+    selectCategory(id)
+      .then((result) => {
+        commonHelper.response(res, result.rows, 200, "get data success from database");
+      })
+      .catch((err) => res.send(err));
+  },
+
   insertProduct: async (req, res) => {
     const { name, stock, price, description, id_category } = req.body;
+
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "Products",
     });
@@ -57,9 +69,7 @@ const productsController = {
       id_category,
     };
 
-    insert(data)
-      .then((result) => commonHelper.response(res, result.rows, 201, "Create Product Success"))
-      .catch((err) => res.send(err));
+    insert(data).then((result) => commonHelper.response(res, result.rows, 200, "Product inserted"));
   },
 
   updateProduct: async (req, res, next) => {

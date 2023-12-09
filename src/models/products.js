@@ -1,6 +1,6 @@
 const Pool = require("../config/db_blanja");
 
-const selectAll = ({ limit, offset, sort, sortby }) => {
+const selectAll = ({ limit, offset, search, sort, sortby }) => {
   return Pool.query(`
     SELECT 
       products.*, 
@@ -8,6 +8,7 @@ const selectAll = ({ limit, offset, sort, sortby }) => {
     FROM
       products 
     LEFT JOIN category ON products.id_category = category.id 
+    WHERE products.name ILIKE '%${search}%'
     ORDER BY ${sortby} ${sort} 
     LIMIT ${limit} OFFSET ${offset}
   `);
@@ -15,6 +16,10 @@ const selectAll = ({ limit, offset, sort, sortby }) => {
 
 const select = (id) => {
   return Pool.query(`SELECT * FROM products  WHERE id='${id}'`);
+};
+
+const selectCategory = (id) => {
+  return Pool.query(`SELECT * FROM products WHERE id_category='${id}'`);
 };
 const insert = (data) => {
   const { id, name, stock, price, photo, description, id_category } = data;
@@ -24,6 +29,7 @@ const update = (data) => {
   const { id, name, stock, price, photo, description, id_category } = data;
   return Pool.query(`UPDATE products SET name='${name}', stock=${stock}, price=${price} ,photo='${photo}' ,description='${description}',id_category='${id_category}' WHERE id='${id}'`);
 };
+
 const deleteData = (id) => {
   return Pool.query(`DELETE FROM products WHERE id='${id}'`);
 };
@@ -52,4 +58,6 @@ module.exports = {
   deleteData,
   countData,
   findId,
+  selectCategory,
+
 };
