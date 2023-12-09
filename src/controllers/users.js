@@ -3,7 +3,7 @@ const cloudinary = require("../middlewares/cloudinary");
 const errorServ = new createError.InternalServerError();
 const commonHelper = require("../helpers/common");
 
-const { findEmail, getUsersById, updateUser, updatePhotoUsers, customerUser, deleteUser, allUser, sellerUser, findID } = require("../models/users");
+const { findEmail, getUsersById, updateUser, updatePhotoUsers, customerUser, deleteUser, allUser, sellerUser, setProfile, findID } = require("../models/users");
 
 const usersControllers = {
   updateUsers: async (req, res, next) => {
