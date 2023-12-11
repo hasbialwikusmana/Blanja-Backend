@@ -4,7 +4,7 @@ const errorServ = new createError.InternalServerError();
 const commonHelper = require("../helpers/common");
 const cloudinary = require("../middlewares/cloudinary");
 
-const { selectAll, select,selectCategory, countData, findId, insert, update, deleteData } = require("../models/products");
+const { selectAll, select, selectCategory, countData, findId, insert, update, deleteData } = require("../models/products");
 
 const productsController = {
   getAllProduct: async (req, res) => {
@@ -41,13 +41,18 @@ const productsController = {
       .catch((err) => res.send(err));
   },
 
-  getCategory: (req, res) => {
-    const id = String(req.params.id);
-    selectCategory(id)
-      .then((result) => {
-        commonHelper.response(res, result.rows, 200, "get data success from database");
-      })
-      .catch((err) => res.send(err));
+  getCategory: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const products = await selectCategory(id);
+
+      if (products.rowCount === 0) {
+        return next(createError(404, "Data Not Found"));
+      }
+      commonHelper.response(res, products.rows, 200, "get data success from database");
+    } catch (error) {
+      console.log(error);
+    }
   },
 
   insertProduct: async (req, res) => {
