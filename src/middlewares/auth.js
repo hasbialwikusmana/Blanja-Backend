@@ -7,6 +7,7 @@ const protect = (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
       let decoded = jwt.verify(token, process.env.SECRET_KEY_JWT);
       req.payload = decoded;
+
       next();
     } else {
       res.status(403).json({
@@ -25,4 +26,24 @@ const protect = (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+const isCustomer = (req, res, next) => {
+  if (req.payload.role === "customer") {
+    next();
+  } else {
+    res.status(403).json({
+      message: "Don't have access",
+    });
+  }
+};
+
+const isSeller = (req, res, next) => {
+  if (req.payload.role === "seller") {
+    next();
+  } else {
+    res.status(403).json({
+      message: "Don't have access",
+    });
+  }
+};
+
+module.exports = { protect, isCustomer, isSeller };
