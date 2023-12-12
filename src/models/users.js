@@ -38,6 +38,16 @@ const updateUser = (data) => {
   return Pool.query(`UPDATE users SET name = '${name}', email = '${email}' , phone = '${phone}', store_name = '${store_name}' WHERE id = '${id}'`);
 };
 
+const setProfileCustomer = (data) => {
+  const { id, name, email, phone } = data;
+  return Pool.query(`UPDATE users SET name = '${name}', email = '${email}' , phone = '${phone}'  WHERE id = '${id}'`);
+};
+
+const setProfileSeller = (data) => {
+  const { id, name, email, phone, store_name } = data;
+  return Pool.query(`UPDATE users SET name = '${name}', email = '${email}' , phone = '${phone}', store_name = '${store_name}' WHERE id = '${id}'`);
+};
+
 const deleteUser = (data) => {
   const { id } = data;
   return Pool.query(`DELETE FROM users WHERE id = '${id}'`);
@@ -64,4 +74,6 @@ module.exports = {
   deleteUser,
   customerUser,
   sellerUser,
+  setProfileCustomer,
+  setProfileSeller,
 };
