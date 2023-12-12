@@ -3,7 +3,7 @@ const cloudinary = require("../middlewares/cloudinary");
 const errorServ = new createError.InternalServerError();
 const commonHelper = require("../helpers/common");
 
-const { findEmail, getUsersById, updateUser, updatePhotoUsers, customerUser, deleteUser, allUser, sellerUser, setProfile, findID } = require("../models/users");
+const { findEmail, getUsersById, updateUser, updatePhotoUsers, customerUser, deleteUser, allUser, sellerUser, setProfileCustomer, setProfileSeller, findID } = require("../models/users");
 
 const usersControllers = {
   updateUsers: async (req, res, next) => {
@@ -17,7 +17,7 @@ const usersControllers = {
         const { rowCount } = await findEmail(email);
         if (rowCount) {
           return res.json({
-            Message: "Email is already used",
+            Message: "Email Already Registered",
           });
         }
       }
@@ -31,7 +31,7 @@ const usersControllers = {
       };
 
       updateUser(data)
-        .then((result) => commonHelper.response(res, result.rows, 200, "Update users Success"))
+        .then((result) => commonHelper.response(res, result.rows, 200, "Data Users Updated"))
         .catch((err) => res.send(err));
     } catch (error) {
       console.log(error);
@@ -44,7 +44,7 @@ const usersControllers = {
       const id = String(req.params.id);
       const { rowCount } = await findID(id);
       if (!rowCount) {
-        res.json({ message: "ID Not Found" });
+        res.json({ message: "id Not Found" });
       }
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "User",
@@ -70,14 +70,14 @@ const usersControllers = {
       const id = String(req.params.id);
       const { rowCount } = await findID(id);
       if (!rowCount) {
-        res.json({ message: "ID Not Found" });
+        res.json({ message: "id Not Found" });
       }
       const data = {
         id,
       };
 
       deleteUser(data)
-        .then((result) => commonHelper.response(res, result.rows, 200, "Delete Users Success"))
+        .then((result) => commonHelper.response(res, result.rows, 200, "Data Users Deleted"))
         .catch((err) => res.send(err));
     } catch (error) {
       console.log(error);
@@ -90,8 +90,68 @@ const usersControllers = {
     const {
       rows: [users],
     } = await findEmail(email);
-    delete users.password;
+    if (users.role === "customer") {
+      delete users.store_name;
+      delete users.password;
+      delete users.role;
+    } else if (users.role === "seller") {
+      delete users.password;
+      delete users.role;
+    }
     commonHelper.response(res, users, 200);
+  },
+
+  updateProfileCustomer: async (req, res, next) => {
+    try {
+      const email = req.payload.email;
+      const { name, phone } = req.body;
+      const {
+        rows: [users],
+      } = await findEmail(email);
+      if (!users) {
+        res.json({ message: "Email Not Found" });
+      }
+      const data = {
+        id: users.id,
+        name,
+        email,
+        phone,
+      };
+      console.log(data);
+      setProfileCustomer(data)
+        .then((result) => commonHelper.response(res, result.rows, 200, "Update Profile Success"))
+        .catch((err) => res.send(err));
+    } catch (error) {
+      console.log(error);
+      next(errorServ);
+    }
+  },
+
+  updateProfileSeller: async (req, res, next) => {
+    try {
+      const email = req.payload.email;
+      const { name, phone, store_name } = req.body;
+      const {
+        rows: [users],
+      } = await findEmail(email);
+      if (!users) {
+        res.json({ message: "Email Not Found" });
+      }
+      const data = {
+        id: users.id,
+        name,
+        email,
+        phone,
+        store_name,
+      };
+
+      setProfileSeller(data)
+        .then((result) => commonHelper.response(res, result.rows, 200, "Update Profile Success"))
+        .catch((err) => res.send(err));
+    } catch (error) {
+      console.log(error);
+      next(errorServ);
+    }
   },
 
   user: async (req, res) => {
