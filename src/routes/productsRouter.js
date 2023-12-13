@@ -5,10 +5,10 @@ const { protect, isSeller } = require("../middlewares/auth");
 const upload = require("../middlewares/upload");
 
 router.get("/", productsControllers.getAllProduct);
-router.get("/:id", productsControllers.getProduct);
-router.get("/category/:id", productsControllers.getCategory);
+router.get("/:id",protect, productsControllers.getProduct);
+router.get("/category/:id",protect, productsControllers.getCategory);
 router.post("/", protect, isSeller, upload, productsControllers.insertProduct);
-router.put("/:id", protect, upload, productsControllers.updateProduct);
-router.delete("/:id", protect, productsControllers.deleteProduct);
+router.put("/:id", protect,isSeller, upload, productsControllers.updateProduct);
+router.delete("/:id", protect,isSeller, productsControllers.deleteProduct);
 
 module.exports = router;
