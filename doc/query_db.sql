@@ -39,22 +39,10 @@ CREATE TABLE order_list (
     size VARCHAR,
     quantity_order INT,
     date_order TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    id_products VARCHAR,
-    id_users VARCHAR,
+    id_product VARCHAR,
+    id_user VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );
 
-CREATE TABLE address (
-    id VARCHAR PRIMARY KEY,
-    name VARCHAR(50), 
-    users_id VARCHAR,
-    address_as VARCHAR(250), 
-    address VARCHAR(250), 
-    phone VARCHAR(20), 
-    postal_code VARCHAR(10), 
-    city VARCHAR(50) ,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP
-);
 
