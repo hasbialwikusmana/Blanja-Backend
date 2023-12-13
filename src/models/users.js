@@ -88,7 +88,7 @@ const sellerUser = () => {
 
 const countData = () => {
   return new Promise((resolve, reject) =>
-    Pool.query("SELECT COUNT(*) FROM products", (error, result) => {
+    Pool.query("SELECT COUNT(*) FROM users", (error, result) => {
       if (!error) {
         resolve(result);
       } else {
