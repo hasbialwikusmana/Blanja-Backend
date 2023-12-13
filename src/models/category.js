@@ -1,21 +1,43 @@
 const Pool = require("../config/db_blanja");
 
-const selectAll = ({ limit, offset, sort, sortby }) => {
-  return Pool.query(`SELECT * FROM category ORDER BY ${sortby} ${sort} LIMIT ${limit} OFFSET ${offset}`);
+const selectAll = ({ limit, offset, search, sort, sortby }) => {
+  return new Promise((resolve, reject) =>
+    Pool.query("SELECT * FROM category WHERE name ILIKE '%" + search + "%' ORDER BY " + sortby + " " + sort + " LIMIT " + limit + " OFFSET " + offset, (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
+    })
+  );
 };
-const select = (id) => {
-  return Pool.query(`SELECT * FROM category WHERE id='${id}'`);
-};
+
 const insert = (data) => {
   const { id, name, photo } = data;
-  return Pool.query(`INSERT INTO category (id,name,photo) VALUES ('${id}','${name}','${photo}')`);
+  return new Promise((resolve, reject) =>
+    Pool.query("INSERT INTO category (id,name,photo) VALUES ($1,$2,$3)", [id, name, photo], (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
+    })
+  );
 };
 const update = (data) => {
   const { id, name, photo } = data;
-  return Pool.query(`UPDATE category SET name='${name}' , photo='${photo}' WHERE id='${id}'`);
+  return new Promise((resolve, reject) =>
+    Pool.query("UPDATE category SET name = $1, photo = $2 WHERE id = $3", [name, photo, id], (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
+    })
+  );
 };
 const deleteData = (id) => {
-  return Pool.query(`DELETE FROM category WHERE id='${id}'`);
+  return Pool.query("DELETE FROM category WHERE id = $1", [id]);
 };
 
 const countData = () => {
@@ -24,7 +46,19 @@ const countData = () => {
 
 const findId = (id) => {
   return new Promise((resolve, reject) =>
-    Pool.query(`SELECT id FROM category WHERE id='${id}'`, (error, result) => {
+    Pool.query("SELECT * FROM category WHERE id=$1", [id], (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
+    })
+  );
+};
+
+const findEmail = (email) => {
+  return new Promise((resolve, reject) =>
+    Pool.query("SELECT * FROM users WHERE email=$1", [email], (error, result) => {
       if (!error) {
         resolve(result);
       } else {
@@ -36,10 +70,10 @@ const findId = (id) => {
 
 module.exports = {
   selectAll,
-  select,
   insert,
   update,
   deleteData,
   countData,
   findId,
+  findEmail,
 };
