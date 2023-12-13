@@ -27,9 +27,9 @@ const insertOrder = (data) => {
 };
 
 const updateOrder = (data) => {
-  const { id_order, id_product, size, quantity_order } = data;
+  const { id_order, id_product, size, quantity_order, updated_at } = data;
   return new Promise((resolve, reject) =>
-    Pool.query("UPDATE order_list SET id_product = $1, size = $2, quantity_order = $3 WHERE id_order = $4", [id_product, size, quantity_order, id_order], (error, result) => {
+    Pool.query("UPDATE order_list SET id_product = $1, size = $2, quantity_order = $3, updated_at = $4 WHERE id_order = $5", [id_product, size, quantity_order, updated_at, id_order], (error, result) => {
       if (!error) {
         resolve(result);
       } else {

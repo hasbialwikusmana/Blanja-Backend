@@ -47,6 +47,7 @@ const ordersControllers = {
       size,
       quantity_order,
       id_user,
+      created_at: new Date(),
     };
     insertOrder(data)
       .then((result) => commonHelper.response(res, result.rows, 201, "Create Order Success"))
@@ -67,6 +68,7 @@ const ordersControllers = {
         id_product,
         size,
         quantity_order,
+        updated_at: new Date(),
       };
       updateOrder(data)
         .then((result) => commonHelper.response(res, result.rows, 200, "Update Order Success"))
