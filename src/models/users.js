@@ -64,13 +64,25 @@ const deleteUser = (data) => {
 
 const allUser = ({ limit, offset, search, sort, sortby }) => {
   return new Promise((resolve, reject) =>
-    Pool.query("SELECT * FROM users WHERE name ILIKE '%" + search + "%' ORDER BY " + sortby + " " + sort + " LIMIT " + limit + " OFFSET " + offset, (error, result) => {
-      if (!error) {
-        resolve(result);
-      } else {
-        reject(error);
+    Pool.query(
+      "SELECT FROM users.name, users.email, users.role, users.photo, users.id, users.phone, users.store_name, users.created_at, users.updated_at WHERE users.name ILIKE '%" +
+        search +
+        "%' ORDER BY " +
+        sortby +
+        " " +
+        sort +
+        " LIMIT " +
+        limit +
+        " OFFSET " +
+        offset,
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
       }
-    })
+    )
   );
 };
 
