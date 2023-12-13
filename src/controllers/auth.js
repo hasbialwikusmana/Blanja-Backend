@@ -9,7 +9,7 @@ const authHelper = require("../helpers/auth");
 const { findEmail, createUser, createSeller } = require("../models/auth");
 
 const authControllers = {
-  registerCustomer: async (req, res) => {
+  registerCustomer: async (req, res, next) => {
     try {
       const { name, email, password } = req.body;
       const { rowCount } = await findEmail(email);
@@ -35,9 +35,9 @@ const authControllers = {
       next(errorServ);
     }
   },
-  registerSeller: async (req, res) => {
+  registerSeller: async (req, res, next) => {
     try {
-      const { name, email, password, phone, store_name, role } = req.body;
+      const { name, email, password, phone, store_name } = req.body;
       const { rowCount } = await findEmail(email);
       if (rowCount) {
         return res.json({
@@ -63,7 +63,7 @@ const authControllers = {
       next(errorServ);
     }
   },
-  login: async (req, res) => {
+  login: async (req, res, next) => {
     try {
       const { email, password } = req.body;
       const {

@@ -2,7 +2,7 @@ const Pool = require("../config/db_blanja");
 
 const findEmail = (email) => {
   return new Promise((resolve, reject) =>
-    Pool.query(`SELECT * FROM users WHERE email='${email}'`, (error, result) => {
+    Pool.query("SELECT * FROM users WHERE email=$1", [email], (error, result) => {
       if (!error) {
         resolve(result);
       } else {
@@ -13,9 +13,9 @@ const findEmail = (email) => {
 };
 
 const createUser = (data) => {
-  const { id, name, email, password, role } = data;
+  const { id, name, email, password, phone, role } = data;
   return new Promise((resolve, reject) =>
-    Pool.query(`INSERT INTO users(id,email,password,name,role) VALUES('${id}','${email}','${password}','${name}','${role}')`, (error, result) => {
+    Pool.query("INSERT INTO users(id,name,email,password,phone,role) VALUES($1,$2,$3,$4,$5,$6)", [id, name, email, password, phone, role], (error, result) => {
       if (!error) {
         resolve(result);
       } else {
@@ -28,7 +28,7 @@ const createUser = (data) => {
 const createSeller = (data) => {
   const { id, name, email, password, phone, store_name, role } = data;
   return new Promise((resolve, reject) =>
-    Pool.query(`INSERT INTO users(id,name,email,password,phone,store_name,role) VALUES('${id}','${name}','${email}','${password}','${phone}','${store_name}','${role}')`, (error, result) => {
+    Pool.query("INSERT INTO users(id,name,email,password,phone,store_name,role) VALUES($1,$2,$3,$4,$5,$6,$7)", [id, name, email, password, phone, store_name, role], (error, result) => {
       if (!error) {
         resolve(result);
       } else {
