@@ -2,13 +2,17 @@ const Pool = require("../config/db_blanja");
 
 const selectAll = ({ limit, offset, search, sort, sortby }) => {
   return new Promise((resolve, reject) => {
-    Pool.query(`SELECT * FROM products WHERE name ILIKE '%${search}%' ORDER BY ${sortby} ${sort} LIMIT ${limit} OFFSET ${offset}`, (error, result) => {
-      if (!error) {
-        resolve(result);
-      } else {
-        reject(error);
+    Pool.query(
+      "SELECT products.*, category.name AS category_name FROM products LEFT JOIN category ON products.id_category = category.id WHERE products.name LIKE $1 ORDER BY " + sortby + " " + sort + " LIMIT $2 OFFSET $3",
+      ["%" + search + "%", limit, offset],
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
       }
-    });
+    );
   });
 };
 
