@@ -53,9 +53,9 @@ const insert = (data) => {
   );
 };
 const update = (data) => {
-  const { id, name, stock, price, photo, description, id_category } = data;
+  const { id, name, stock, price, photo, description, id_category, updated_at } = data;
   return new Promise((resolve, reject) =>
-    Pool.query("UPDATE products SET name=$1, stock=$2, price=$3, photo=$4, description=$5, id_category=$6 WHERE id=$7", [name, stock, price, photo, description, id_category, id], (error, result) => {
+    Pool.query("UPDATE products SET name=$1, stock=$2, price=$3, photo=$4, description=$5, id_category=$6 , updated_at=$7 WHERE id=$8", [name, stock, price, photo, description, id_category, updated_at, id], (error, result) => {
       if (!error) {
         resolve(result);
       } else {

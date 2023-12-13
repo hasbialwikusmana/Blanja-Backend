@@ -77,6 +77,7 @@ const productsController = {
         photo,
         description,
         id_category,
+        created_at: new Date(),
       };
       insert(data)
         .then((result) => commonHelper.response(res, result.rows, 200, "Product successfully added"))
@@ -108,6 +109,7 @@ const productsController = {
         photo,
         description,
         id_category,
+        updated_at: new Date(),
       };
       update(data)
         .then((result) => commonHelper.response(res, result.rows, 200, "Product successfully updated"))
