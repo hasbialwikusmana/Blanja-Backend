@@ -25,9 +25,9 @@ const findID = (id) => {
 };
 
 const setProfileCustomer = (data) => {
-  const { id, name, email, phone, photo } = data;
+  const { id, name, email, phone, photo, updated_at } = data;
   return new Promise((resolve, reject) =>
-    Pool.query("UPDATE users SET name = $1, email = $2 , phone = $3, photo= $4 WHERE id = $5", [name, email, phone, photo, id], (error, result) => {
+    Pool.query("UPDATE users SET name = $1, email = $2 , phone = $3, photo= $4, updated_at = $5 WHERE id = $6", [name, email, phone, photo, updated_at, id], (error, result) => {
       if (!error) {
         resolve(result);
       } else {
@@ -38,9 +38,9 @@ const setProfileCustomer = (data) => {
 };
 
 const setProfileSeller = (data) => {
-  const { id, name, email, phone, store_name, photo } = data;
+  const { id, name, email, phone, store_name, photo, updated_at } = data;
   return new Promise((resolve, reject) =>
-    Pool.query("UPDATE users SET name = $1, email = $2 , phone = $3, store_name = $4, photo= $5 WHERE id = $6", [name, email, phone, store_name, photo, id], (error, result) => {
+    Pool.query("UPDATE users SET name = $1, email = $2 , phone = $3, store_name = $4, photo= $5, updated_at = $6 WHERE id = $7", [name, email, phone, store_name, photo, updated_at, id], (error, result) => {
       if (!error) {
         resolve(result);
       } else {

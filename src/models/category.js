@@ -25,9 +25,9 @@ const insert = (data) => {
   );
 };
 const update = (data) => {
-  const { id, name, photo } = data;
+  const { id, name, photo, updated_at } = data;
   return new Promise((resolve, reject) =>
-    Pool.query("UPDATE category SET name = $1, photo = $2 WHERE id = $3", [name, photo, id], (error, result) => {
+    Pool.query("UPDATE category SET name = $1, photo = $2, updated_at = $3 WHERE id = $4", [name, photo, updated_at, id], (error, result) => {
       if (!error) {
         resolve(result);
       } else {

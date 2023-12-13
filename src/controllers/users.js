@@ -117,6 +117,7 @@ const usersControllers = {
         email,
         phone,
         photo,
+        updated_at: new Date(),
       };
       console.log(data);
       setProfileCustomer(data)
@@ -149,6 +150,7 @@ const usersControllers = {
         phone,
         store_name,
         photo,
+        updated_at: new Date(),
       };
 
       setProfileSeller(data)

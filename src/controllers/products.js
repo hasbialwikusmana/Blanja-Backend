@@ -91,15 +91,16 @@ const productsController = {
   updateProduct: async (req, res, next) => {
     try {
       const id = String(req.params.id);
-      const { users } = await findId(id);
-      if (!users) {
-        return next(createError(403, "ID is Not Found"));
-      }
       const { name, stock, price, description, id_category } = req.body;
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "User",
       });
       const photo = result.secure_url;
+
+      const { rowCount } = await findId(id);
+      if (!rowCount) {
+        return next(createError(403, "ID is Not Found"));
+      }
 
       const data = {
         id,
@@ -111,6 +112,7 @@ const productsController = {
         id_category,
         updated_at: new Date(),
       };
+      console.log(data);
       update(data)
         .then((result) => commonHelper.response(res, result.rows, 200, "Product successfully updated"))
         .catch((err) => res.send(err));

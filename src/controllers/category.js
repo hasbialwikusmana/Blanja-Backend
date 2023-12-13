@@ -13,7 +13,7 @@ const categoryControllers = {
       const offset = (page - 1) * limit;
       const sortby = req.query.sortby || "id";
       const sort = req.query.sort || "ASC";
-      const result = await selectAll({ limit, search,offset, sort, sortby });
+      const result = await selectAll({ limit, search, offset, sort, sortby });
       const {
         rows: [count],
       } = await countData();
@@ -86,6 +86,7 @@ const categoryControllers = {
         id,
         name,
         photo,
+        updated_at: new Date(),
       };
       update(data)
         .then((result) => commonHelper.response(res, result.rows, 200, "Category updated"))
