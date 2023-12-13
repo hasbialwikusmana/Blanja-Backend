@@ -78,12 +78,26 @@ const allUser = ({ limit, offset, search, sort, sortby }) => {
   );
 };
 
-const customerUser = () => {
-  return Pool.query("SELECT * FROM users WHERE role = 'customer'");
+const customerUser = ({ limit, offset, search, sort, sortby }) => {
+  return Pool.query(
+    "SELECT users.id, users.name, users.email, users.phone, users.role, users.photo, users.created_at, users.updated_at FROM users WHERE users.name ILIKE $1 AND users.role = 'customer' ORDER BY " +
+      sortby +
+      " " +
+      sort +
+      " LIMIT $2 OFFSET $3",
+    ["%" + search + "%", limit, offset]
+  );
 };
 
-const sellerUser = () => {
-  return Pool.query("SELECT * FROM users WHERE role = 'seller'");
+const sellerUser = ({ limit, offset, search, sort, sortby }) => {
+  return Pool.query(
+    "SELECT users.id, users.name, users.email, users.phone, users.role, users.store_name, users.photo, users.created_at, users.updated_at FROM users WHERE users.name ILIKE $1 AND users.role = 'seller' ORDER BY " +
+      sortby +
+      " " +
+      sort +
+      " LIMIT $2 OFFSET $3",
+    ["%" + search + "%", limit, offset]
+  );
 };
 
 const countData = () => {

@@ -8,75 +8,82 @@ const { findEmail, customerUser, deleteUser, allUser, sellerUser, setProfileCust
 const usersControllers = {
   user: async (req, res, next) => {
     try {
-      try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 5;
-        const search = req.query.search || "";
-        const offset = (page - 1) * limit;
-        const sortby = req.query.sortby || "id";
-        const sort = req.query.sort || "ASC";
-        const result = await allUser({ limit, offset, search, sort, sortby });
-        const {
-          rows: [count],
-        } = await countData();
-        const totalData = parseInt(count.count);
-        const totalPage = Math.ceil(totalData / limit);
-        const pagination = {
-          currentPage: page,
-          limit: limit,
-          totalData: totalData,
-          totalPage: totalPage,
-        };
-        commonHelper.response(res, result.rows, 200, "get data success", pagination);
-      } catch (error) {
-        console.log(error);
-        next(errorServ);
-      }
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+      const search = req.query.search || "";
+      const offset = (page - 1) * limit;
+      const sortby = req.query.sortby || "id";
+      const sort = req.query.sort || "ASC";
+      const result = await allUser({ limit, offset, search, sort, sortby });
+      const {
+        rows: [count],
+      } = await countData();
+      const totalData = parseInt(count.count);
+      const totalPage = Math.ceil(totalData / limit);
+      const pagination = {
+        currentPage: page,
+        limit: limit,
+        totalData: totalData,
+        totalPage: totalPage,
+      };
+      commonHelper.response(res, result.rows, 200, "get data success", pagination);
     } catch (error) {
       console.log(error);
       next(errorServ);
     }
   },
 
-  customer: async (req, res) => {
+  customer: async (req, res, next) => {
     try {
-      const result = await customerUser();
-
-      if (result.rows.length > 0) {
-        return res.status(200).json({
-          message: "Here is all data",
-          data: result.rows,
-        });
-      } else {
-        return res.status(200).json({
-          message: "No data available",
-        });
-      }
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+      const search = req.query.search || "";
+      const offset = (page - 1) * limit;
+      const sortby = req.query.sortby || "id";
+      const sort = req.query.sort || "ASC";
+      const result = await customerUser({ limit, offset, search, sort, sortby });
+      const {
+        rows: [count],
+      } = await countData();
+      const totalData = parseInt(count.count);
+      const totalPage = Math.ceil(totalData / limit);
+      const pagination = {
+        currentPage: page,
+        limit: limit,
+        totalData: totalData,
+        totalPage: totalPage,
+      };
+      commonHelper.response(res, result.rows, 200, "get data success", pagination);
     } catch (error) {
-      return res.status(404).json({
-        message: "Something went wrong",
-      });
+      console.log(error);
+      next(errorServ);
     }
   },
 
-  seller: async (req, res) => {
+  seller: async (req, res, next) => {
     try {
-      const result = await sellerUser();
-
-      if (result.rows.length > 0) {
-        return res.status(200).json({
-          message: "Here is all data",
-          data: result.rows,
-        });
-      } else {
-        return res.status(200).json({
-          message: "No data available",
-        });
-      }
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+      const search = req.query.search || "";
+      const offset = (page - 1) * limit;
+      const sortby = req.query.sortby || "id";
+      const sort = req.query.sort || "ASC";
+      const result = await sellerUser({ limit, offset, search, sort, sortby });
+      const {
+        rows: [count],
+      } = await countData();
+      const totalData = parseInt(count.count);
+      const totalPage = Math.ceil(totalData / limit);
+      const pagination = {
+        currentPage: page,
+        limit: limit,
+        totalData: totalData,
+        totalPage: totalPage,
+      };
+      commonHelper.response(res, result.rows, 200, "get data success", pagination);
     } catch (error) {
-      return res.status(404).json({
-        message: "Something went wrong",
-      });
+      console.log(error);
+      next(errorServ);
     }
   },
 
