@@ -8,11 +8,8 @@ router.get("/", usersControllers.user);
 router.get("/customer", usersControllers.customer);
 router.get("/seller", usersControllers.seller);
 router.get("/profile", protect, usersControllers.profile);
-router.get("/:id", usersControllers.getselectUsers);
-router.put("/profile/:id", protect, upload, usersControllers.updatePhoto);
-router.put("/customer/profile", protect, isCustomer, usersControllers.updateProfileCustomer);
-router.put("/seller/profile", protect, isSeller, usersControllers.updateProfileSeller);
-router.put("/:id", usersControllers.updateUsers);
+router.put("/customer/profile", protect, isCustomer, upload, usersControllers.updateProfileCustomer);
+router.put("/seller/profile", protect, isSeller, upload, usersControllers.updateProfileSeller);
 router.delete("/:id", usersControllers.deleteUsers);
 
 module.exports = router;
