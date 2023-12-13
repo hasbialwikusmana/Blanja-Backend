@@ -13,7 +13,7 @@ const productsController = {
       const limit = parseInt(req.query.limit) || 5;
       const search = req.query.search || "";
       const offset = (page - 1) * limit;
-      const sortby = req.query.sortby || "price";
+      const sortby = req.query.sortby || "id";
       const sort = req.query.sort || "ASC";
       const result = await selectAll({ limit, offset, search, sort, sortby });
       const {
@@ -63,12 +63,12 @@ const productsController = {
 
   insertProduct: async (req, res, next) => {
     try {
+      const { name, stock, price, description, id_category } = req.body;
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "User",
       });
       const photo = result.secure_url;
       const id = uuidv4();
-      const { name, stock, price, description, id_category } = req.body;
       const data = {
         id,
         name,
@@ -79,7 +79,7 @@ const productsController = {
         id_category,
       };
       insert(data)
-        .then((result) => commonHelper.response(res, result.rows, 200, "Product added"))
+        .then((result) => commonHelper.response(res, result.rows, 200, "Product successfully added"))
         .catch((err) => res.send(err));
     } catch (error) {
       console.log(error);
@@ -94,11 +94,11 @@ const productsController = {
       if (!users) {
         return next(createError(403, "ID is Not Found"));
       }
+      const { name, stock, price, description, id_category } = req.body;
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "User",
       });
       const photo = result.secure_url;
-      const { name, stock, price, description, id_category } = req.body;
 
       const data = {
         id,
