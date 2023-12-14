@@ -46,3 +46,15 @@ CREATE TABLE order_list (
 );
 
 
+CREATE TABLE address (
+    id VARCHAR PRIMARY KEY,
+    name VARCHAR, 
+    users_id VARCHAR,
+    address_as VARCHAR, 
+    address VARCHAR,
+    phone VARCHAR, 
+    postal_code VARCHAR, 
+    city VARCHAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
+);
