@@ -3,8 +3,8 @@ const Pool = require("../config/db_blanja");
 const selectAll = ({ limit, offset, search, sort, sortby }) => {
   return new Promise((resolve, reject) => {
     Pool.query(
-      "SELECT products.*, category.name AS category_name FROM products LEFT JOIN category ON products.id_category = category.id WHERE products.name LIKE $1 ORDER BY " + sortby + " " + sort + " LIMIT $2 OFFSET $3",
-      ["%" + search + "%", limit, offset],
+      `SELECT products.id, products.name, products.stock, products.price, products.photo, products.description, products.id_category, category.name AS category_name FROM products INNER JOIN category ON products.id_category = category.id WHERE products.name ILIKE $1 ORDER BY ${sortby} ${sort} LIMIT $2 OFFSET $3`,
+      [`%${search}%`, limit, offset],
       (error, result) => {
         if (!error) {
           resolve(result);
@@ -66,15 +66,7 @@ const update = (data) => {
 };
 
 const deleteData = (id) => {
-  return new Promise((resolve, reject) =>
-    Pool.query("DELETE FROM products WHERE id=$1 RETURNING *", [id], (error, result) => {
-      if (!error) {
-        resolve(result);
-      } else {
-        reject(error);
-      }
-    })
-  );
+  return Pool.query("DELETE FROM products WHERE id = $1", [id]);
 };
 
 const countData = () => {
