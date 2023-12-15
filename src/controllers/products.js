@@ -12,9 +12,9 @@ const productsController = {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 5;
       const search = req.query.search || "";
-      const offset = (page - 1) * limit;
-      const sortby = req.query.sortby || "id";
+      const sortby = req.query.sortby || "name";
       const sort = req.query.sort || "ASC";
+      const offset = (page - 1) * limit;
       const result = await selectAll({ limit, offset, search, sort, sortby });
       const {
         rows: [count],
@@ -27,23 +27,23 @@ const productsController = {
         totalData: totalData,
         totalPage: totalPage,
       };
-      commonHelper.response(res, result.rows, 200, "get data success", pagination);
+      commonHelper.response(res, result.rows, 200, "Data Products Success", pagination);
     } catch (error) {
       console.log(error);
       next(errorServ);
     }
   },
-  getProduct: (req, res, next) => {
+  getProduct: async (req, res, next) => {
     try {
       const id = req.params.id;
-      select(id).then((result) => {
-        if (result.rowCount === 0) {
-          return next(createError(404, "Data Not Found"));
-        }
-        commonHelper.response(res, result.rows, 200, "get data success from database");
-      });
+      const {
+        rows: [data],
+      } = await select(id);
+
+      commonHelper.response(res, data, 200, "Data Products By Id Success");
     } catch (error) {
       console.log(error);
+      next(errorServ);
     }
   },
 
@@ -55,7 +55,7 @@ const productsController = {
       if (products.rowCount === 0) {
         return next(createError(404, "Data Not Found"));
       }
-      commonHelper.response(res, products.rows, 200, "get data success from database");
+      commonHelper.response(res, products.rows[0], 200, "Data Products By Category Success");
     } catch (error) {
       console.log(error);
     }
@@ -64,10 +64,10 @@ const productsController = {
   insertProduct: async (req, res, next) => {
     try {
       const { name, stock, price, description, id_category } = req.body;
-      const result = await cloudinary.uploader.upload(req.file.path, {
+      const imageUrl = await cloudinary.uploader.upload(req.file.path, {
         folder: "User",
       });
-      const photo = result.secure_url;
+      const photo = imageUrl.secure_url;
       const id = uuidv4();
       const data = {
         id,
@@ -79,9 +79,12 @@ const productsController = {
         id_category,
         created_at: new Date(),
       };
-      insert(data)
-        .then((result) => commonHelper.response(res, result.rows, 200, "Product successfully added"))
-        .catch((err) => res.send(err));
+      insert(data);
+
+      res.json({
+        status: "Success",
+        message: "Product successfully created",
+      });
     } catch (error) {
       console.log(error);
       next(errorServ);
@@ -112,10 +115,11 @@ const productsController = {
         id_category,
         updated_at: new Date(),
       };
-      console.log(data);
-      update(data)
-        .then((result) => commonHelper.response(res, result.rows, 200, "Product successfully updated"))
-        .catch((err) => res.send(err));
+      update(data);
+      res.json({
+        status: "Success",
+        message: "Product successfully updated",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -123,13 +127,13 @@ const productsController = {
   deleteProduct: async (req, res, next) => {
     try {
       const id = String(req.params.id);
-      const { users } = await findId(id);
-      if (!users) {
+      const { rowCount } = await findId(id);
+      if (!rowCount) {
         return next(createError(403, "ID is Not Found"));
       }
-      deleteData(id)
-        .then((result) => commonHelper.response(res, result.rows, 200, "Product successfully deleted"))
-        .catch((err) => res.send(err));
+      deleteData(id);
+
+      res.json({ message: "Product successfully deleted" });
     } catch (error) {
       console.log(error);
     }
