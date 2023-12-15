@@ -1,14 +1,16 @@
 const response = (res, result, status, message, pagination) => {
   const resultPrint = {};
-  resultPrint.status = "success";
+  resultPrint.status = "Success";
   if (status >= 400) {
-    resultPrint.status = "error";
+    resultPrint.status = "Error";
   }
-  resultPrint.statusCode = status;
-  resultPrint.data = result;
+  resultPrint.status_code = status || 200;
+  resultPrint.data = result || null;
   resultPrint.message = message || null;
-  resultPrint.pagination = pagination || {};
-  res.status(status).json(resultPrint);
+  resultPrint.pagination = pagination;
+  return res.status(resultPrint.status_code).json(resultPrint);
 };
 
-module.exports = { response };
+module.exports = {
+  response,
+};
