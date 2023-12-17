@@ -1,7 +1,7 @@
 const Pool = require("../config/db_blanja");
 
 const selectAllOrder = ({ limit, offset, sort, sortby }) => {
-  return Pool.query(`SELECT order_list.id_order,order_list.size,order_list.quantity_order,products.name,products.photo,users.id
+  return Pool.query(`SELECT order_list.*,products.name,products.photo,users.id
   FROM order_list JOIN products ON order_list.id_product = products.id
   JOIN users ON order_list.id_user = users.id
     ORDER BY ${sortby} ${sort} LIMIT ${limit} OFFSET ${offset}`);
