@@ -1,19 +1,24 @@
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router();
 
-const authRouter = require("./authRouter");
-const usersRouter = require("./usersRoute");
-const productsRouter = require("./productsRouter");
-const categoryRouter = require("./categoryRouter");
-const ordersRouter = require("./ordersRouter");
-const shippingAddress = require("./addressRouter");
-const slidersRouter = require("./slidersRouter");
+// Import semua rute yang telah dibuat
+const authRouter = require("./auth");
+const customerRouter = require("./customer");
+const sellerRouter = require("./seller");
+const categoryRouter = require("./category");
+const productRouter = require("./product");
+const sliderRouter = require("./slider");
+const addressRouter = require("./address");
+const orderRouter = require("./orders");
 
+// Grupkan rute berdasarkan fungsionalitas
 router.use("/auth", authRouter);
-router.use("/users", usersRouter);
-router.use("/products", productsRouter);
+router.use("/customers", customerRouter);
+router.use("/sellers", sellerRouter);
 router.use("/category", categoryRouter);
-router.use("/orders", ordersRouter);
-router.use("/shipping", shippingAddress);
-router.use("/sliders", slidersRouter);
+router.use("/products", productRouter);
+router.use("/sliders", sliderRouter);
+router.use("/address", addressRouter);
+router.use("/orders", orderRouter);
 
 module.exports = router;

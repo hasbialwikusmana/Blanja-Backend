@@ -1,38 +1,16 @@
 const multer = require("multer");
-
-// manajemen file
-const multerUpload = multer({
-  storage: multer.diskStorage({}),
-  fileFilter: (req, file, cb) => {
-    const fileSize = parseInt(req.headers["content-length"]);
-    const maxSize = 2 * 1024 * 1024;
-    if (fileSize > maxSize) {
-      const error = {
-        message: "File size exceeds 2 MB",
-      };
-      return cb(error, false);
-    }
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png" || file.mimetype === "image/jpg") {
-      cb(null, true);
-    } else {
-      const error = {
-        message: "file must be jpeg,jpg or png",
-      };
-      cb(error, false);
-    }
+// max 10 MB
+const maxSize = 10 * 1000 * 1000;
+const storage = multer.diskStorage({
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + "-" + file.originalname);
   },
 });
 
-// middleware
-const upload = (req, res, next) => {
-  const multerSingle = multerUpload.single("photo");
-  multerSingle(req, res, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      next();
-    }
-  });
-};
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: maxSize },
+});
 
 module.exports = upload;

@@ -1,17 +1,17 @@
 const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
+
 const protect = (req, res, next) => {
   try {
     let token;
     if (req.headers.authorization) {
       token = req.headers.authorization.split(" ")[1];
       let decoded = jwt.verify(token, process.env.SECRET_KEY_JWT);
-      req.payload = decoded;
-
+      req.decoded = decoded;
       next();
     } else {
-      res.status(403).json({
-        message: "Please login first",
+      res.status(401).json({
+        message: "server need token",
       });
     }
   } catch (error) {
@@ -26,24 +26,6 @@ const protect = (req, res, next) => {
   }
 };
 
-const isCustomer = (req, res, next) => {
-  if (req.payload.role === "customer") {
-    next();
-  } else {
-    res.status(403).json({
-      message: "Don't have access",
-    });
-  }
+module.exports = {
+  protect,
 };
-
-const isSeller = (req, res, next) => {
-  if (req.payload.role === "seller") {
-    next();
-  } else {
-    res.status(403).json({
-      message: "Don't have access",
-    });
-  }
-};
-
-module.exports = { protect, isCustomer, isSeller };

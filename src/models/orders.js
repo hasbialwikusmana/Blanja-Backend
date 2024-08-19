@@ -1,55 +1,74 @@
 const Pool = require("../config/db_blanja");
 
-const selectAllOrder = ({ limit, offset, sort, sortby }) => {
-  return Pool.query(`SELECT order_list.*,products.name,products.photo,users.id
-  FROM order_list JOIN products ON order_list.id_product = products.id
-  JOIN users ON order_list.id_user = users.id
+const selectAll = ({ limit, offset, sort, sortby }) => {
+  return Pool.query(`
+    SELECT *
+    FROM orders
     ORDER BY ${sortby} ${sort} LIMIT ${limit} OFFSET ${offset}`);
 };
 
-const selectOrder = (id_user) => {
-  return Pool.query(`SELECT order_list.id_order, order_list.size, products.name, products.id AS id_product, order_list.quantity_order, products.price, products.price*order_list.quantity_order AS total_price, products.photo
-  FROM order_list
-  LEFT JOIN products ON order_list.id_product = products.id WHERE id_user = '${id_user}'`);
+const select = (id) => {
+  return Pool.query("SELECT * FROM orders WHERE id = $1", [id]);
 };
 
-const insertOrder = (data) => {
-  const { id_order, id_product, size, quantity_order, id_user } = data;
-  return new Promise((resolve, reject) =>
-    Pool.query("INSERT INTO order_list (id_order, id_product, size, quantity_order, id_user) VALUES ($1, $2, $3, $4, $5)", [id_order, id_product, size, quantity_order, id_user], (error, result) => {
+const selectBySellerId = ({ limit, offset, search, sort, sortby, seller_id }) => {
+  return Pool.query(`SELECT * FROM orders WHERE seller_id = $1 AND status ILIKE $2 ORDER BY ${sortby} ${sort} LIMIT $3 OFFSET $4`, [seller_id, `%${search}%`, limit, offset]);
+};
+const insert = (data) => {
+  const { id, customer_id, seller_id, total_price, status, payment_method } = data;
+  return new Promise((resolve, reject) => {
+    Pool.query("INSERT INTO orders (id, customer_id, seller_id, total_price, status, payment_method) VALUES ($1, $2, $3, $4, $5, $6)", [id, customer_id, seller_id, total_price, status, payment_method], (error, result) => {
       if (!error) {
         resolve(result);
       } else {
         reject(error);
       }
-    })
-  );
+    });
+  });
 };
 
-const updateOrder = (data) => {
-  const { id_order, id_product, size, quantity_order, updated_at } = data;
-  return new Promise((resolve, reject) =>
-    Pool.query("UPDATE order_list SET id_product = $1, size = $2, quantity_order = $3, updated_at = $4 WHERE id_order = $5", [id_product, size, quantity_order, updated_at, id_order], (error, result) => {
-      if (!error) {
-        resolve(result);
-      } else {
-        reject(error);
+const update = (data) => {
+  const { id, customer_id, seller_id, status, payment_method, total_price, updated_at } = data;
+
+  return new Promise((resolve, reject) => {
+    Pool.query(
+      `UPDATE orders 
+       SET 
+          customer_id = COALESCE($1, customer_id),
+          seller_id = COALESCE($2, seller_id),
+          status = COALESCE($3, status), 
+          payment_method = COALESCE($4, payment_method), 
+          total_price = COALESCE($5, total_price), 
+          updated_at = $6 
+       WHERE id = $7
+       RETURNING *`,
+      [customer_id, seller_id, status, payment_method, total_price, updated_at, id],
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
       }
-    })
-  );
+    );
+  });
 };
 
-const deleteOrder = (id_order) => {
-  return Pool.query("DELETE FROM order_list WHERE id_order = $1", [id_order]);
+const deleteData = (id) => {
+  return Pool.query("DELETE FROM orders WHERE id = $1", [id]);
 };
 
 const countData = () => {
-  return Pool.query("SELECT COUNT(*) FROM order_list");
+  return Pool.query("SELECT COUNT(*) FROM orders");
 };
 
-const findId = (id_order) => {
+const countDataBySellerId = (seller_id) => {
+  return Pool.query("SELECT COUNT(*) FROM orders WHERE seller_id = $1", [seller_id]);
+};
+
+const findId = (id) => {
   return new Promise((resolve, reject) =>
-    Pool.query("SELECT * FROM order_list WHERE id_order=$1", [id_order], (error, result) => {
+    Pool.query("SELECT * FROM orders WHERE id = $1", [id], (error, result) => {
       if (!error) {
         resolve(result);
       } else {
@@ -60,11 +79,13 @@ const findId = (id_order) => {
 };
 
 module.exports = {
-  selectAllOrder,
-  selectOrder,
-  insertOrder,
-  updateOrder,
-  deleteOrder,
+  selectAll,
+  select,
+  selectBySellerId,
+  countDataBySellerId,
+  insert,
+  update,
+  deleteData,
   countData,
   findId,
 };

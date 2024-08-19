@@ -5,20 +5,18 @@ const helmet = require("helmet");
 const xss = require("xss-clean");
 const cors = require("cors");
 const createError = require("http-errors");
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const port = process.env.PORT || 5000;
-const mainRouter = require("./src/routes/index");
+const mainRouter = require("./src/routes");
 
 app.use(express.json());
 app.use(helmet());
 app.use(xss());
 app.use(cors());
-app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
-app.use("/", mainRouter);
-app.use("/img", express.static("upload"));
+app.use("/v1", mainRouter);
+app.use("/img", express.static("src/upload"));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -30,6 +28,7 @@ app.all("*", (req, res, next) => {
   next(new createError.NotFound());
 });
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const messError = err.message || "Internal Server Error";
   const statusCode = err.status || 500;

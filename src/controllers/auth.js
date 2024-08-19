@@ -1,110 +1,73 @@
 const createError = require("http-errors");
 const bcrypt = require("bcryptjs");
-const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
-const errorServ = new createError.InternalServerError();
+const Joi = require("joi");
 const commonHelper = require("../helpers/common");
 const authHelper = require("../helpers/auth");
+const users = require("../models/users");
 
-const { findEmail, createUser, createSeller } = require("../models/auth");
+const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const {
+      rows: [user],
+    } = await users.findByEmail(email);
+    if (!user) {
+      return commonHelper.response(res, null, 404, "Email or Password wrong");
+    }
 
-const authControllers = {
-  registerCustomer: async (req, res, next) => {
-    try {
-      const { name, email, password } = req.body;
-      const { rowCount } = await findEmail(email);
-      if (rowCount) {
-        return res.json({
-          Message: "Email is already used",
-        });
-      }
-      const salt = bcrypt.genSaltSync(10);
-      const passwordHash = bcrypt.hashSync(password, salt);
-      const id = uuidv4();
-      let data = {
-        id: id,
-        name,
-        email,
-        password: passwordHash,
-        role: "customer",
-      };
-      createUser(data)
-        .then((result) => commonHelper.response(res, result.rows, 201, "Register success"))
-        .catch((err) => res.send(err));
-    } catch (error) {
-      next(errorServ);
-    }
-  },
-  registerSeller: async (req, res, next) => {
-    try {
-      const { name, email, password, phone, store_name } = req.body;
-      const { rowCount } = await findEmail(email);
-      if (rowCount) {
-        return res.json({
-          Message: "Email is already used",
-        });
-      }
-      const salt = bcrypt.genSaltSync(10);
-      const passwordHash = bcrypt.hashSync(password, salt);
-      const id = uuidv4();
-      let data = {
-        id: id,
-        email,
-        name,
-        password: passwordHash,
-        phone,
-        store_name,
-        role: "seller",
-      };
-      createSeller(data)
-        .then((result) => commonHelper.response(res, result.rows, 201, "Register success"))
-        .catch((err) => res.send(err));
-    } catch (error) {
-      next(errorServ);
-    }
-  },
-  login: async (req, res, next) => {
-    try {
-      const { email, password } = req.body;
-      const {
-        rows: [users],
-      } = await findEmail(email);
-      if (!users) {
-        return res.json({
-          Message: "Email is invalid",
-        });
-      }
-      const isValidPassword = bcrypt.compareSync(password, users.password);
-      if (!isValidPassword) {
-        return res.json({
-          Message: " Password is invalid",
-        });
-      }
-      delete users.password;
-      let payload = {
-        email: users.email,
-        role: users.role,
-      };
+    const schema = Joi.object({
+      email: Joi.string().empty("").required(),
+      password: Joi.string().empty("").required(),
+    });
 
-      users.token = authHelper.generateToken(payload);
-      users.refreshToken = authHelper.generateRefreshToken(payload);
-      commonHelper.response(res, users, 201, "login is successful");
-    } catch (error) {
-      next(errorServ);
+    const { error } = schema.validate(req.body);
+
+    if (error) {
+      // eslint-disable-next-line no-useless-escape
+      return commonHelper.response(res, null, 400, error.details[0].message.replace(/\"/g, ""));
     }
-  },
-  refreshToken: (req, res) => {
-    const refreshToken = req.body.refreshToken;
-    const decoded = jwt.verify(refreshToken, process.env.SECRET_KEY_JWT);
-    let payload = {
-      email: decoded.email,
-      role: decoded.role,
+    const validPassword = bcrypt.compareSync(password, user.password);
+
+    if (!validPassword) {
+      return commonHelper.response(res, null, 401, "Email or Password wrong");
+    }
+
+    delete user.password;
+
+    const payload = {
+      id: user.user_id,
+      email: user.email,
+      role: user.role,
     };
-    const result = {
-      token: authHelper.generateToken(payload),
-      refreshToken: authHelper.generateRefreshToken(payload),
-    };
-    commonHelper.response(res, result, 200);
-  },
+
+    user.token = authHelper.generateToken(payload);
+    user.refreshToken = authHelper.generateRefreshToken(payload);
+
+    commonHelper.response(res, user, 200, "Login success");
+  } catch (error) {
+    console.log(error);
+    next(new createError.InternalServerError(error));
+  }
 };
-module.exports = authControllers;
+
+const refreshToken = (req, res) => {
+  const refreshToken = req.body.refreshToken;
+  const decoded = jwt.verify(refreshToken, process.env.SECRET_KEY_JWT);
+  let payload = {
+    id: decoded.user_id,
+    email: decoded.email,
+    role: decoded.role,
+  };
+
+  const result = {
+    token: authHelper.generateToken(payload),
+    refreshToken: authHelper.generateRefreshToken(payload),
+  };
+  commonHelper.response(res, result, 200);
+};
+
+module.exports = {
+  login,
+  refreshToken,
+};
