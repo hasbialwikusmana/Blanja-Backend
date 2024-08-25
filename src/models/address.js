@@ -15,6 +15,17 @@ const selectByCustomerId = (customer_id) => {
   return Pool.query("SELECT * FROM address WHERE customer_id = $1 ORDER BY primary_address DESC, created_at DESC", [customer_id]);
 };
 
+const getPrimaryAddressByCustomerId = (customerId) => {
+  return Pool.query(
+    `
+    SELECT * 
+    FROM address 
+    WHERE customer_id = $1 AND primary_address = true 
+    LIMIT 1`,
+    [customerId]
+  );
+};
+
 const insert = (data) => {
   const { id, customer_id, address_as, recipient_name, recipient_phone, address, postal_code, city, primary_address } = data;
   return new Promise((resolve, reject) => {
@@ -77,6 +88,7 @@ module.exports = {
   selectAll,
   select,
   selectByCustomerId,
+  getPrimaryAddressByCustomerId,
   insert,
   update,
   deleteData,

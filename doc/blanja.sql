@@ -61,6 +61,7 @@ CREATE TABLE orders (
   id UUID PRIMARY KEY,
   customer_id UUID REFERENCES customers(id) ON DELETE CASCADE,
   seller_id UUID REFERENCES sellers(id) ON DELETE CASCADE,
+  address_id UUID REFERENCES address(id) ON DELETE CASCADE,
   total_price NUMERIC(10, 2) NOT NULL,
   status VARCHAR(255) NOT NULL,
   payment_method VARCHAR(255) NOT NULL,

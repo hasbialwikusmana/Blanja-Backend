@@ -58,11 +58,40 @@ const getAddressByCustomerId = async (req, res, next) => {
     // Mengambil semua alamat berdasarkan customer_id
     const result = await addressModel.selectByCustomerId(customerId);
 
-    if (result.rowCount === 0) {
-      return next(new createError.NotFound("No address found for this customer"));
-    }
+    // if (result.rowCount === 0) {
+    //   return next(new createError.NotFound(404, "No address found for this customer"));
+    // }
 
     commonHelper.response(res, result.rows, 200, "Get address by email success");
+  } catch (error) {
+    console.log(error);
+    next(new createError.InternalServerError());
+  }
+};
+
+const getPrimaryAddressByCustomerId = async (req, res, next) => {
+  try {
+    const emailCustomer = req.decoded.email;
+
+    // Find user based on email
+    const {
+      rows: [user],
+    } = await users.findByEmail(emailCustomer, { relation: "customers" });
+
+    if (!user) {
+      return next(new createError.NotFound("User not found"));
+    }
+
+    const { id: customerId } = user;
+
+    // Get the primary address based on customer_id
+    const result = await addressModel.getPrimaryAddressByCustomerId(customerId);
+
+    // if (result.rowCount === 0) {
+    //   return next(new createError.NotFound("No primary address found for this customer"));
+    // }
+
+    commonHelper.response(res, result.rows[0], 200, "Get primary address success");
   } catch (error) {
     console.log(error);
     next(new createError.InternalServerError());
@@ -180,6 +209,7 @@ module.exports = {
   getAllAddress,
   getAddressById,
   getAddressByCustomerId,
+  getPrimaryAddressByCustomerId,
   insertAddress,
   updateAddress,
   deleteAddress,

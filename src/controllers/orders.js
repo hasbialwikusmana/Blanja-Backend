@@ -53,47 +53,131 @@ const getOrderById = async (req, res, next) => {
   }
 };
 
-const getOrderBySellerId = async (req, res, next) => {
+const getOrderByCustomerId = async (req, res, next) => {
   try {
-    const emailSeller = req.decoded.email;
+    // Extract email from decoded token
+    const emailCustomer = req.decoded.email;
+
+    // Fetch customer by email
     const {
       rows: [user],
-    } = await users.findByEmail(emailSeller, { relation: "sellers" });
-    const sellerId = user.id;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    } = await users.findByEmail(emailCustomer, { relation: "customers" });
+
+    // Check if user exists
+    if (!user) {
+      return next(new createError.NotFound("Customer not found"));
+    }
+
+    const customerId = user.id;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
     const search = req.query.search || "";
-    const sort = req.query.sort || "DESC";
+    const sort = req.query.sort?.toUpperCase() === "ASC" ? "ASC" : "DESC";
     const sortby = req.query.sortby || "created_at";
     const offset = (page - 1) * limit;
 
-    const result = await orders.selectBySellerId({ limit, offset, search, sort, sortby, seller_id: sellerId });
+    // Fetch orders by customer ID
+    const orderResult = await orders.selectByCustomerId({
+      limit,
+      offset,
+      search,
+      sort,
+      sortby,
+      customer_id: customerId,
+    });
+
+    // Check if orders are found
+    // if (orderResult.rowCount === 0) {
+    //   return next(createError(404, "No orders found for this customer"));
+
+    // }
+
+    // Fetch total count of orders for pagination
     const {
       rows: [count],
-    } = await orders.countDataBySellerId(sellerId);
-    const totalData = parseInt(count.count);
+    } = await orders.countDataByCustomerId(customerId);
+
+    const totalData = parseInt(count.count, 10);
     const totalPage = Math.ceil(totalData / limit);
     const pagination = {
       currentPage: page,
-      limit: limit,
-      totalData: totalData,
-      totalPage: totalPage,
+      limit,
+      totalData,
+      totalPage,
     };
 
-    if (result.rowCount === 0) {
-      return next(createError(404, "Data Not Found"));
+    // Send response with orders and pagination data
+    commonHelper.response(res, orderResult.rows, 200, "Get data success", pagination);
+  } catch (error) {
+    console.error("Error in getOrderByCustomerId:", error.message || error);
+    next(new createError.InternalServerError("An error occurred while retrieving orders"));
+  }
+};
+
+const getOrderBySellerId = async (req, res, next) => {
+  try {
+    // Extract email from decoded token
+    const emailSeller = req.decoded.email;
+
+    // Fetch customer by email
+    const {
+      rows: [user],
+    } = await users.findByEmail(emailSeller, { relation: "sellers" });
+
+    // Check if user exists
+    if (!user) {
+      return next(new createError.NotFound("Seller not found"));
     }
 
-    commonHelper.response(res, result.rows, 200, "Data Products By Seller Email Success", pagination);
+    const sellerId = user.id;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const search = req.query.search || "";
+    const sort = req.query.sort?.toUpperCase() === "ASC" ? "ASC" : "DESC";
+    const sortby = req.query.sortby || "created_at";
+    const offset = (page - 1) * limit;
+
+    // Fetch orders by customer ID
+    const orderResult = await orders.selectBySellerId({
+      limit,
+      offset,
+      search,
+      sort,
+      sortby,
+      seller_id: sellerId,
+    });
+
+    // Check if orders are found
+    // if (orderResult.rowCount === 0) {
+    //   return next(createError(404, "No orders found for this customer"));
+
+    // }
+
+    // Fetch total count of orders for pagination
+    const {
+      rows: [count],
+    } = await orders.countDataBySellerId(sellerId);
+
+    const totalData = parseInt(count.count, 10);
+    const totalPage = Math.ceil(totalData / limit);
+    const pagination = {
+      currentPage: page,
+      limit,
+      totalData,
+      totalPage,
+    };
+
+    // Send response with orders and pagination data
+    commonHelper.response(res, orderResult.rows, 200, "Get data success", pagination);
   } catch (error) {
-    console.log(error);
-    next(new createError.InternalServerError());
+    console.error("Error in getorderBySellerId:", error.message || error);
+    next(new createError.InternalServerError("An error occurred while retrieving orders"));
   }
 };
 
 const insertOrder = async (req, res, next) => {
   try {
-    const { items, status, payment_method } = req.body;
+    const { items, status, payment_method, address_id } = req.body;
     const emailCustomer = req.decoded.email;
 
     const {
@@ -115,6 +199,7 @@ const insertOrder = async (req, res, next) => {
       id: orderId,
       customer_id: customerId,
       seller_id: sellerId,
+      address_id,
       total_price: total_price,
       status,
       payment_method,
@@ -150,7 +235,7 @@ const insertOrder = async (req, res, next) => {
 const updateOrder = async (req, res, next) => {
   try {
     const id = String(req.params.id);
-    const { total_price, status, payment_method } = req.body;
+    const { total_price, status, payment_method, address_id } = req.body;
 
     const orderResult = await orders.findId(id);
     if (!orderResult.rowCount) {
@@ -162,6 +247,7 @@ const updateOrder = async (req, res, next) => {
       total_price: total_price || orderResult.rows[0].total_price, // Update jika total_price berubah
       status: status || orderResult.rows[0].status, // Update jika status berubah
       payment_method: payment_method || orderResult.rows[0].payment_method, // Update jika payment_method berubah
+      address_id: address_id || orderResult.rows[0].address_id, // Update jika address_id berubah
       updated_at: new Date(), // Selalu update timestamp
     };
 
@@ -196,6 +282,7 @@ const deleteOrder = async (req, res, next) => {
 module.exports = {
   getAllOrders,
   getOrderById,
+  getOrderByCustomerId,
   getOrderBySellerId,
   insertOrder,
   updateOrder,

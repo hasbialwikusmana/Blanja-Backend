@@ -72,9 +72,9 @@ const getAllProductByCategoryId = async (req, res, next) => {
       totalData: totalData,
       totalPage: totalPage,
     };
-    if (result.rowCount === 0) {
-      return next(createError(404, "Data Not Found"));
-    }
+    // if (result.rowCount === 0) {
+    //   return next(createError(404, "Data Not Found"));
+    // }
     commonHelper.response(res, result.rows, 200, "Data Products Success", pagination);
   } catch (error) {
     console.log(error);
