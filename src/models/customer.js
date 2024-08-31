@@ -11,10 +11,10 @@ const register = ({ id, user_id, name }) => {
   });
 };
 
-const updateCustomer = ({ name, email, phone, gender, date_of_birth, photo }, id) => {
+const updateCustomer = ({ name, phone, gender, date_of_birth, photo }, id) => {
   return pool.query(
-    "UPDATE customers SET  name = $1, email = COALESCE($2, email), phone = COALESCE($3, phone), gender = COALESCE($4, gender), date_of_birth = COALESCE($5, date_of_birth), photo = COALESCE($6, photo), updated_at = CURRENT_TIMESTAMP WHERE user_id = $7",
-    [name, email, phone, gender, date_of_birth, photo, id]
+    "UPDATE customers SET  name = COALESCE($1, name), phone = COALESCE($2, phone), gender = COALESCE($3, gender), date_of_birth = COALESCE($4, date_of_birth), photo = COALESCE($5, photo), updated_at = CURRENT_TIMESTAMP WHERE user_id = $6",
+    [name, phone, gender, date_of_birth, photo, id]
   );
 };
 

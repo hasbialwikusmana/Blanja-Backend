@@ -119,7 +119,7 @@ const updateProfile = async (req, res, next) => {
       rows: [user],
     } = await users.findByEmail(email);
 
-    const { name, phone, gender, date_of_birth, photo, email: newEmail } = req.body;
+    const { name, phone, gender, date_of_birth, photo } = req.body;
 
     const data = {
       name,
@@ -128,11 +128,6 @@ const updateProfile = async (req, res, next) => {
       date_of_birth,
       photo,
     };
-
-    if (newEmail && newEmail !== user.email) {
-      await users.updateEmail({ email: newEmail }, user.id);
-      data.email = newEmail;
-    }
 
     await customers.updateCustomer(data, user.user_id);
     commonHelper.response(res, null, 200, "Update customer success");
