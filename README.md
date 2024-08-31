@@ -3,7 +3,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/hasbialwikusmana/Blanja-Frontend">
+  <a href="https://github.com/hasbialwikusmana/Blanja-Frontend" targer="_blank">
     <img src="https://github.com/user-attachments/assets/c3e6b400-4cba-4d23-958f-2339700b2e56" alt="Logo" width="100%">
   </a>
 
@@ -12,7 +12,7 @@
   <p align="center">
  Blanja is an online fashion store that offers fashion products.
     <br />
-    <a href="https://blanjastore.netlify.app/">View Demo</a>
+    <a href="https://blanjastore.netlify.app/" target="_blank">View Demo</a>
   </p>
 </div>
 
@@ -20,7 +20,35 @@
 
 ## About The Project
 
-**Blanja** is an online shop that currently focuses on the fashion market. Allows sellers to market their fashion products and customers can buy the best and cheap fashion needs.
+**Blanja** is an online store designed to facilitate the sale of products through the web. The application allows users to browse various products, add products to the catalog, update product information, delete products, and conduct online sales transactions.
+
+This website was developed individually by Hasbi, using React.js, Express.js, and PostgreSQL as the database to store and manage product and transaction information.
+
+## Features
+
+- **Product Management**: Allows for the addition, update, and deletion of product listings. Admins can manage product details, including descriptions, prices, and images.
+
+- **User Authentication**: Secure authentication system using JSON Web Tokens (JWT) for both users and administrators. Includes login, registration, and password recovery functionalities.
+
+- **Order Processing**: Handles customer orders from placement through to completion, including order status updates and transaction history.
+
+- **Image Management**: Integration with Cloudinary for storing and serving product images, ensuring fast and reliable image delivery.
+
+- **Category Management**: Organizes products into categories for easier browsing and searching by users.
+
+- **Search and Filtering**: Provides search and filtering capabilities to help users find products quickly based on various criteria.
+
+- **Responsive API**: RESTful API endpoints for seamless integration with the Blanja frontend and other services.
+
+- **Database Management**: Utilizes PostgreSQL for reliable and scalable data storage, including user data, product information, and transaction records.
+
+- **Error Handling**: Comprehensive error handling and logging to ensure smooth operation and easy troubleshooting.
+
+- **Security Features**: Implements best practices for securing data and interactions, including JWT-based authentication and secure data storage.
+
+- **Documentation**: Includes API documentation for easy integration and usage with tools like Postman.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Built With
 
@@ -123,7 +151,7 @@ CLOUD_API_SECRET =
 
 :rocket: [`Frontend Blanja`](https://github.com/hasbialwikusmana/Blanja-Frontend)
 
-:rocket: [`Web Service`](blanja-backend.vercel.app/)
+:rocket: [`Web Service`](https://blanja-backend.vercel.app/)
 
 :rocket: [`Demo Blanja`](https://blanjastore.netlify.app/)
 
@@ -131,7 +159,7 @@ CLOUD_API_SECRET =
 
 ## Contact
 
-My Email : hasbialwi70@gmail.com
+My Email : [hasbialwi70@gmail.com](mailto:hasbialwi70@gmail.com)
 
 Project Link: [https://github.com/hasbialwikusmana/Blanja-Frontend](https://github.com/hasbialwikusmana/Blanja-Frontend)
 
