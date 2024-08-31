@@ -11,8 +11,11 @@ const register = ({ id, user_id, name }) => {
   });
 };
 
-const updateCustomer = ({ name, phone, gender, date_of_birth, photo }, id) => {
-  return pool.query("UPDATE customers SET  name = $1, phone = $2, gender = $3, date_of_birth = $4, photo = $5, updated_at = CURRENT_TIMESTAMP WHERE user_id = $6", [name, phone, gender, date_of_birth, photo, id]);
+const updateCustomer = ({ name, email, phone, gender, date_of_birth, photo }, id) => {
+  return pool.query(
+    "UPDATE customers SET  name = $1, email = COALESCE($2, email), phone = COALESCE($3, phone), gender = COALESCE($4, gender), date_of_birth = COALESCE($5, date_of_birth), photo = COALESCE($6, photo), updated_at = CURRENT_TIMESTAMP WHERE user_id = $7",
+    [name, email, phone, gender, date_of_birth, photo, id]
+  );
 };
 
 const updateImage = ({ photo }, user_id) => {
